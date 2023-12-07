@@ -55,9 +55,9 @@ public:
 };
 
 int main(){
-    srand(time(0));
-    Game game(10);
-    game.startGame();
+    //srand(time(0));
+    //Game game(10);
+    //game.startGame();
 
     return 0;
 }
