@@ -1,4 +1,3 @@
-//åŠªåŠ›ç”Ÿå‡ºäº¤ä»£çµ¦éšŠå‹å€‘
 #include<iostream>
 #include<string>
 #include<ctime>
@@ -8,40 +7,79 @@ using namespace std;
 
 class Weapon{
 protected:
-  string name;//æ­¦å™¨å
-  int attack;//æ”»æ“ŠåŠ›
-  int level;//æ­¦å™¨ç­‰ç´š
+  string name;//ªZ¾¹¦W
+  int attack;//§ğÀ»¤O
+  int level;//ªZ¾¹µ¥¯Å
 public:
   Weapon(string name,int attack,int level) : name(name),attack(attack),level(level){}
 };
 
 
 class Character{
-protected:
-  string name;//è§’è‰²å
-  int health;//ç”Ÿå‘½å€¼
-  int positionX;//è§’è‰²ä½ç½®x
-  int positionY;//è§’è‰²ä½ç½®y
-  Weapon *weapon;//æ­¦å™¨
  public:
-  //è¨­å®šè§’è‰²åå­— å’Œ ä½ç½® å…¶ä»–éƒ½æœ‰é è¨­å€¼
+  string name;//¨¤¦â¦W
+  int health;//¥Í©R­È
+  int positionX;//¨¤¦â¦ì¸mx
+  int positionY;//¨¤¦â¦ì¸my
+  Weapon *weapon;//ªZ¾¹
+
+  //³]©w¨¤¦â¦W¦r ©M ¦ì¸m ¨ä¥L³£¦³¹w³]­È
   Character(string n,int x,int y) : name(n),health(100),positionX(x),positionY(y){};
-  
-  void move(int step);//å¯¦ç¾ç§»å‹•é‚è¼¯ è¦è€ƒæ…®éšœç¤™ç‰©å’Œåœ°åœ–é‚Šç•Œ
-  void attack(Character& enemy);//å¯¦ç¾æ”»æ“Šé‚è¼¯ 
-  void displayInfo() ;//é¡¯ç¤ºè§’è‰²è³‡æ–™
+
+  void move(int step){//¹ê²{²¾°ÊÅŞ¿è ­n¦Ò¼{»ÙÃªª«©M¦a¹ÏÃä¬É
+    // Â²³æªº²¾°ÊÅŞ¿è¡A¤£¦Ò¼{Ãä¬É©M»ÙÃªª«
+    positionX += step;
+    positionY += step;
+    cout << name << " moved " << step << " steps.\n";
+  }
+  void attack(Character& enemy){//¹ê²{§ğÀ»ÅŞ¿è 
+    // Â²³æªº§ğÀ»ÅŞ¿è
+      enemy.health -= 10;
+    cout << name << " attacked " << enemy.name << ". "
+      << enemy.name << "'s health: " << enemy.health << "\n";
+  }
+  void displayInfo() {//Åã¥Ü¨¤¦â¸ê®Æ
+    // Åã¥Ü¨¤¦â«H®§
+    cout << "Name: " << name << ", Position: (" << positionX 
+      << ", " << positionY << "), Health: " << health << "\n";
+  }
 };
 
 class GameMap{
-protected:
-  int size;
-  vector<vector<int>> obstacles; // 1è¡¨ç¤ºéšœç¤™ç‰©
 public:
-  void generateObstacles();// è¦å¯¦ç¾éš¨æ©Ÿç”Ÿæˆéšœç¤™ç‰©çš„é‚è¼¯
-  GameMap(int size) : size(size){//åˆå§‹åŒ–mapå¤§å° è¦å¯¦ç¾éšœç¤™ç‰©
-     generateObstacles();
+  int size;
+  vector<vector<int>> obstacles; // 1ªí¥Ü»ÙÃªª«
+
+  void generateObstacles(){// ­n¹ê²{ÀH¾÷¥Í¦¨»ÙÃªª«ªºÅŞ¿è
+    // Â²³æªºÀH¾÷¥Í¦¨»ÙÃªª«ªºÅŞ¿è
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            obstacles[i][j] = rand() % 2; 
+          // ÀH¾÷¥Í¦¨0©Î1¡Aªí¥Ü¦³µL»ÙÃªª«
+        }
+    }
   }
-  void displayMap() ;// é¡¯ç¤ºåœ°åœ–ï¼ŒåŒ…æ‹¬è§’è‰²ä½ç½®å’Œéšœç¤™ç‰©
+
+  GameMap(int size) : size(size){//ªì©l¤Æmap¤j¤p ­n¹ê²{»ÙÃªª«
+    obstacles.resize(size, vector<int>(size, 0));
+    generateObstacles();
+  }
+  void displayMap() {// Åã¥Ü¦a¹Ï¡A¥]¬A¨¤¦â¦ì¸m©M»ÙÃªª«
+    // Åã¥Ü¦a¹Ï¡A¥]¬A¨¤¦â¦ì¸m©M»ÙÃªª«
+    cout << "Game Map:\n";
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            // Â²³æªí¥Ü¨¤¦â©M»ÙÃªª«
+            if (obstacles[i][j] == 1) {
+                cout << "X ";
+            } else {
+                cout << ". ";
+            }
+        }
+        cout << "\n";
+    }
+    cout << "\n";
+  }
 };
 
 class Game{
@@ -49,15 +87,52 @@ private:
   GameMap map;
   vector<Character> players;
 public:
-  void initializePlayers();//é›™æ–¹é¸æ“‡è§’è‰²
-  Game(int mapSize);//è¨­å®šåœ°åœ–
-  void startGame() ;//é–‹å§‹éŠæˆ²
+  void initializePlayers(){//Âù¤è¿ï¾Ü¨¤¦â
+    for (int i = 1; i <= 2; ++i) {
+        string name = "Player" + to_string(i);
+        int startX = rand() % map.size;
+        int startY = rand() % map.size;
+        Character player(name, startX, startY);
+        players.push_back(player);
+    }
+  }
+  Game(int mapSize) : map(mapSize){//³]©w¦a¹Ï
+     initializePlayers();
+  }
+  void startGame() {//¶}©l¹CÀ¸
+    while (true) {
+      // Åã¥Ü¦a¹Ï©Mª±®a«H®§
+      map.displayMap();
+      for (auto &player : players) {
+        player.displayInfo();
+      }
+
+      // ª±®a¾Ş§@
+      for (auto &player : players) {
+        int steps = rand() % 3 + 1; // Â²³æªº¨B¼Æ¥Í¦¨ÅŞ¿è
+        player.move(steps);
+
+        // Â²³æªº§ğÀ»ÅŞ¿è¡AÀH¾÷¿ï¾Ü§ğÀ»¹ï¤â
+        int targetIndex = rand() % players.size();
+        if (targetIndex != &player - &players[0]) {
+          player.attack(players[targetIndex]);
+        }
+
+        // Â²³æªº³Ó­t§PÂ_¡A°²³]¦å¶q¬°0®É¬°¥¢±Ñ
+        if (players[targetIndex].health <= 0) {
+        cout << players[targetIndex].name << " has been defeated! " 
+           << player.name << " wins!\n";
+         return;
+        }
+      }
+    }
+  }
 };
 
 int main(){
-    //srand(time(0));
-    //Game game(10);
-    //game.startGame();
-
+    srand(time(0));
+    Game game(10);
+    game.startGame();
     return 0;
 }
+
