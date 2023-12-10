@@ -1,3 +1,4 @@
+//BUG:移動邏輯，未考慮邊界和障礙物
 #include<iostream>
 #include<string>
 #include<ctime>
@@ -11,18 +12,19 @@ protected:
   int attack;//攻擊力
   int level;//武器等級
 public:
-  Weapon(string name,int attack,int level) : name(name),attack(attack),level(level){}
+  Weapon(string name,int attack,int level)
+    : name(name),attack(attack),level(level){}
 };
 
 
 class Character{
- public:
+protected:
   string name;//角色名
   int health;//生命值
   int positionX;//角色位置x
   int positionY;//角色位置y
   Weapon *weapon;//武器
-
+public:
   //設定角色名字 和 位置 其他都有預設值
   Character(string n,int x,int y) : name(n),health(100),positionX(x),positionY(y){};
 
@@ -32,9 +34,9 @@ class Character{
     positionY += step;
     cout << name << " moved " << step << " steps.\n";
   }
-  void attack(Character& enemy){//實現攻擊邏輯 
+  virtual void attack(Character& enemy){//實現攻擊邏輯 
     // 簡單的攻擊邏輯
-      enemy.health -= 10;
+    enemy.health -= 10;
     cout << name << " attacked " << enemy.name << ". "
       << enemy.name << "'s health: " << enemy.health << "\n";
   }
@@ -43,13 +45,26 @@ class Character{
     cout << "Name: " << name << ", Position: (" << positionX 
       << ", " << positionY << "), Health: " << health << "\n";
   }
+  string getName () const {
+    return name ;
+  }
+  int getHealth () const {
+    return health ;
+  }
+  int getX() const{
+    return positionX ;
+  }
+  int getY() const{
+    return positionY ;
+  }
+
 };
 
 class GameMap{
-public:
+protected:
   int size;
   vector<vector<int>> obstacles; // 1表示障礙物
-
+public:
   void generateObstacles(){// 要實現隨機生成障礙物的邏輯
     // 簡單的隨機生成障礙物的邏輯
     for (int i = 0; i < size; ++i) {
@@ -64,21 +79,30 @@ public:
     obstacles.resize(size, vector<int>(size, 0));
     generateObstacles();
   }
-  void displayMap() {// 顯示地圖，包括角色位置和障礙物
+  void displayMap(const vector<Character>& characters) {// 顯示地圖，包括角色位置和障礙物
     // 顯示地圖，包括角色位置和障礙物
     cout << "Game Map:\n";
     for (int i = 0; i < size; ++i) {
         for (int j = 0; j < size; ++j) {
             // 簡單表示角色和障礙物
-            if (obstacles[i][j] == 1) {
+            if(i == characters[0].getX() && j == characters[0].getY()){
+              cout << "A ";
+            } else if(i == characters[1].getX() && j == characters[1].getY()){
+              cout << "B ";
+            } else if (obstacles[i][j] == 1) {
                 cout << "X ";
-            } else {
+            }else {
                 cout << ". ";
             }
         }
         cout << "\n";
     }
     cout << "\n";
+  }
+
+  
+  int getSize() const {
+    return size;
   }
 };
 
@@ -90,8 +114,8 @@ public:
   void initializePlayers(){//雙方選擇角色
     for (int i = 1; i <= 2; ++i) {
         string name = "Player" + to_string(i);
-        int startX = rand() % map.size;
-        int startY = rand() % map.size;
+        int startX = rand() % map.getSize();
+        int startY = rand() % map.getSize();
         Character player(name, startX, startY);
         players.push_back(player);
     }
@@ -102,7 +126,7 @@ public:
   void startGame() {//開始遊戲
     while (true) {
       // 顯示地圖和玩家信息
-      map.displayMap();
+      map.displayMap(players);
       for (auto &player : players) {
         player.displayInfo();
       }
@@ -119,10 +143,10 @@ public:
         }
 
         // 簡單的勝負判斷，假設血量為0時為失敗
-        if (players[targetIndex].health <= 0) {
-        cout << players[targetIndex].name << " has been defeated! " 
-           << player.name << " wins!\n";
-         return;
+        if (players[targetIndex].getHealth() <= 0) {
+          cout << players[targetIndex].getName() << " has been defeated! " 
+            << player.getName() << " wins!\n";
+          return;
         }
       }
     }
